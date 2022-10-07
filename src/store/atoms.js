@@ -1,0 +1,33 @@
+import { atom, useAtom } from "jotai"
+// exemple d'utilisation avec persistence dans le localStorage :
+// export const countAtom = atomWithLocalStorage("count", 0)
+
+// dans un composant fonction qui a besoin de countAtom :
+// import { useAtom, countAtom } from "store"
+// ...
+// const [count, setCount] = useAtom(countAtom) // <= s'utilise comme un useState
+
+export const atomWithLocalStorage = (key, initialValue) => {
+  const getInitialValue = () => {
+    const item = localStorage.getItem(key)
+    if (item !== null) {
+      return JSON.parse(item)
+    }
+    return initialValue
+  }
+  const baseAtom = atom(getInitialValue())
+  const derivedAtom = atom(
+    (get) => get(baseAtom),
+    (get, set, update) => {
+      const nextValue = typeof update === "function" ? update(get(baseAtom)) : update
+      set(baseAtom, nextValue)
+      localStorage.setItem(key, JSON.stringify(nextValue))
+    }
+  )
+  return derivedAtom
+}
+
+const isDark = window?.matchMedia('(prefers-color-scheme: dark)').matches
+export const darkAtom = atomWithLocalStorage('black-mode', isDark)
+
+export { useAtom }
