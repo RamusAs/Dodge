@@ -27,7 +27,4 @@ export const atomWithLocalStorage = (key, initialValue) => {
   return derivedAtom
 }
 
-const isDark = window?.matchMedia('(prefers-color-scheme: dark)').matches
-export const darkAtom = atomWithLocalStorage('black-mode', isDark)
-
 export { useAtom }
